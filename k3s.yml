@@ -26,9 +26,14 @@ onboot:
     image: linuxkit/mount:v0.8
     command: ["/usr/bin/mountie", "/etc/rancher/"]
   # - name: mount-vpnkit
-  #   image: alpine:3.11
+  #   image: alpine:3.12
   #   binds:
   #       - /var/:/host_var:rbind,rshared
+  - name: move-logs
+    image: alpine:3.12
+    binds:
+        - /var:/host_var
+    command: ["sh", "-c", "mv -v /host_var/log /host_var/lib && ln -vs /var/lib/log /host_var/log"]
 services:
   - name: acpid
     image: linuxkit/acpid:v0.8
