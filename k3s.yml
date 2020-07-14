@@ -69,6 +69,7 @@ services:
       - /lib/modules:/lib/modules
       - /dev/kmsg:/dev/kmsg
       # - /var/lib/rancher:/var/lib/rancher
+    rootfsPropagation: shared
   - name: getty
     image: linuxkit/getty:v0.8
     env:
