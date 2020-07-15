@@ -7,6 +7,12 @@ init:
   - linuxkit/containerd:v0.8
   - linuxkit/ca-certificates:v0.8
 onboot:
+  - name: welcome
+    image: busybox:latest
+    command: ["/bin/echo","-e"," _   ___        _        _ _             _   _ _ \n   
+| |_|_  |___   |_|___   | |_|___ _ _ _ _| |_|_| |_ \n
+| '_|_  |_ -|  | |   |  | | |   | | |_'_| '_| |  _|\n
+|_,_|___|___|  |_|_|_|  |_|_|_|_|___|_,_|_,_|_|_|"]
   - name: metadata
     image: linuxkit/metadata:v0.8
   - name: sysctl
@@ -29,11 +35,13 @@ onboot:
     image: alpine:3.12
     binds:
       - /var/lib:/host_var_lib
-    command: ["sh", "-c", "mkdir -p /host_var_lib/rancher /host_var_lib/etc-rancher"]
+    command: ["sh", "-c", "mkdir -p /host_var_lib/rancher /host_var_lib/etc-rancher /host_var_lib/bin-rancher"]
   - name: dhcpcd
     image: linuxkit/dhcpcd:v0.8
     command: ["/sbin/dhcpcd", "--nobackground", "-f", "/dhcpcd.conf", "-1"]
 services:
+  - name: rngd
+    image: linuxkit/rngd:v0.8
   - name: acpid
     image: linuxkit/acpid:v0.8
   - name: ntpd
@@ -45,16 +53,17 @@ services:
     capabilities:
       - all
     net: host
-    command: 
-      - /bin/k3s
-      - server
-      - --kubelet-arg=cgroup-root=kubepods
-      - --kubelet-arg=kube-reserved-cgroup=podruntime
-      - --kubelet-arg=system-reserved-cgroup=systemreserved
+    command:
+      - sh
+      - /bin/rancher/k3s.sh
     mounts:
       - type: bind
         source: /sys/fs/cgroup
         destination: /sys/fs/cgroup
+        options: ["rw","rbind","rshared","nosuid","noexec","nodev","relatime"]
+      - type: bind
+        source: /sys/fs/bpf
+        destination: /sys/fs/bpf
         options: ["rw","rbind","rshared","nosuid","noexec","nodev","relatime"]
     runtime:
       cgroups:
@@ -64,10 +73,11 @@ services:
       mkdir:
         - /var/lib/rancher
     binds:
-      - /var/lib/etc-rancher:/etc/rancher
+      - /dev/kmsg:/dev/kmsg
       - /etc/resolv.conf:/etc/resolv.conf
       - /lib/modules:/lib/modules
-      - /dev/kmsg:/dev/kmsg
+      - /bin/rancher:/bin/rancher
+      - /var/lib/etc-rancher:/etc/rancher
       - /var/lib/rancher:/var/lib/rancher
     rootfsPropagation: shared
   - name: getty
@@ -76,6 +86,30 @@ services:
       - INSECURE=true
     binds.add:
       - /var/lib:/var/lib
+onshutdown:
+  - name: shutdown
+    image: busybox:latest
+    command: ["/bin/echo", "get back soon!"]
+
+files:
+  - path: /bin/rancher/k3s.sh
+    contents: |
+      export MASTER_IP=$(/bin/ifconfig eth0|grep 'inet addr'| cut -d":" -f2 | awk '{ print $1}')
+      /bin/k3s \
+        server \
+          --bind-address=${MASTER_IP} \
+          --flannel-backend=none \
+          --kubelet-arg=cgroup-root=kubepods \
+          --kubelet-arg=kube-reserved-cgroup=podruntime \
+          --kubelet-arg=system-reserved-cgroup=systemreserved \
+          --no-deploy=servicelb \
+          --no-deploy=traefik \
+          --no-flannel \
+          --node-external-ip=${MASTER_IP} \
+          --node-ip=${MASTER_IP}
+    mode: "0755"
+  - path: etc/linuxkit.yml
+    metadata: yaml
 
 trust:
   org:
