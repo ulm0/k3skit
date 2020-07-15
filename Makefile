@@ -5,4 +5,4 @@ build:
 	@linuxkit build -format iso-efi $(BUILD_YML)
 
 run:
-	@linuxkit run hyperkit -disk size=4096M -iso -uefi $(BUILD_ISO)
+	@sudo linuxkit run hyperkit -networking=vmnet -disk size=10240M -iso -uefi $(BUILD_ISO)
