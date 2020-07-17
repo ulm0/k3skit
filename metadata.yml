@@ -1,0 +1,18 @@
+rancher:
+  entries:
+    k3s.sh:
+      content: |
+        export MASTER_IP=$(/bin/ifconfig eth0|grep 'inet addr'| cut -d: -f2 | awk '{ print $1 }')
+        /bin/k3s \
+          server \
+            --bind-address=${MASTER_IP} \
+            --flannel-backend=none \
+            --kubelet-arg=cgroup-root=kubepods \
+            --kubelet-arg=kube-reserved-cgroup=podruntime \
+            --kubelet-arg=system-reserved-cgroup=systemreserved \
+            --no-deploy=servicelb \
+            --no-deploy=traefik \
+            --no-flannel \
+            --node-external-ip=${MASTER_IP} \
+            --node-ip=${MASTER_IP}
+      mode: "0755"
