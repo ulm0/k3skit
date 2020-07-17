@@ -19,10 +19,10 @@ build:
 	@linuxkit build -format iso-efi $(BUILD_YML)
 
 yalk-sudo-run: json
-	@sudo linuxkit run hyperkit -networking=vmnet -cpus=$(YALK_CPUS) -mem=$(YALK_MEM) -disk size=$(YALK_DISK) -data-file=$(METADATA_JSON) -iso -uefi $(BUILD_ISO)
+	@sudo linuxkit -v run hyperkit -networking=vmnet -cpus=$(YALK_CPUS) -mem=$(YALK_MEM) -disk size=$(YALK_DISK) -data-file=$(METADATA_JSON) -iso -uefi $(BUILD_ISO)
 
 yalk-run: json
-	@linuxkit run hyperkit -networking=$(YALK_NET) -cpus=$(YALK_CPUS) -mem=$(YALK_MEM) -disk size=$(YALK_DISK) -data-file=$(METADATA_JSON) -iso -uefi $(BUILD_ISO)
+	@linuxkit -v run hyperkit -networking=$(YALK_NET) -cpus=$(YALK_CPUS) -mem=$(YALK_MEM) -disk size=$(YALK_DISK) -data-file=$(METADATA_JSON) -iso -uefi $(BUILD_ISO)
 
 run: $(YALK_RUN)
 
