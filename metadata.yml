@@ -6,13 +6,16 @@ rancher:
         /bin/k3s \
           server \
             --bind-address=${MASTER_IP} \
+            --disable-cloud-controller \
+            --disable=metrics-server \
+            --disable=servicelb \
+            --disable=traefik \
             --flannel-backend=none \
             --kubelet-arg=cgroup-root=kubepods \
             --kubelet-arg=kube-reserved-cgroup=podruntime \
             --kubelet-arg=system-reserved-cgroup=systemreserved \
-            --no-deploy=servicelb \
-            --no-deploy=traefik \
             --no-flannel \
             --node-external-ip=${MASTER_IP} \
-            --node-ip=${MASTER_IP}
+            --node-ip=${MASTER_IP} \
+            --secrets-encryption
       mode: "0755"

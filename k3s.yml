@@ -11,10 +11,12 @@ onboot:
     image: linuxkit/metadata:v0.8
   - name: sysctl
     image: linuxkit/sysctl:v0.8
+    binds:
+     - /etc/sysctl.d/01-k3s.conf:/etc/sysctl.d/01-k3s.conf
   - name: sysfs
     image: linuxkit/sysfs:v0.8
-  - name: binfmt
-    image: linuxkit/binfmt:v0.8
+  # - name: binfmt
+  #   image: linuxkit/binfmt:v0.8
   - name: format
     image: linuxkit/format:v0.8
   - name: mount
@@ -34,16 +36,20 @@ onboot:
     image: linuxkit/dhcpcd:v0.8
     command: ["/sbin/dhcpcd", "--nobackground", "-f", "/dhcpcd.conf", "-1"]
 services:
-  - name: rngd
-    image: linuxkit/rngd:v0.8
+  # - name: rngd
+  #   image: linuxkit/rngd:v0.8
+  #   cgroupsPath: systemreserved/rngd
   - name: acpid
     image: linuxkit/acpid:v0.8
+    cgroupsPath: systemreserved/acpid
   - name: ntpd
     image: linuxkit/openntpd:v0.8
+    cgroupsPath: systemreserved/ntpd
   - name: host-timesync-daemon
     image: linuxkit/host-timesync-daemon:v0.8
+    cgroupsPath: systemreserved/host-timesync-daemon
   - name: k3s
-    image: rancher/k3s:v1.18.4-k3s1
+    image: rancher/k3s:v1.18.6-k3s1
     capabilities:
       - all
     net: host
@@ -74,6 +80,7 @@ services:
       - /var/lib/etc-rancher:/etc/rancher
       - /var/lib/rancher:/var/lib/rancher
     rootfsPropagation: shared
+    cgroupsPath: podruntime/k3s
   # - name: getty
   #   image: linuxkit/getty:v0.8
   #   env:
@@ -81,22 +88,20 @@ services:
   #   binds.add:
   #     - /var/lib/etc-rancher:/etc/rancher
   #     - /var/lib/rancher:/var/lib/rancher
+  #   cgroupsPath: systemreserved/getty
   - name: sshd
     image: linuxkit/sshd:v0.8
     binds.add:
       - /etc/motd:/etc/motd
       - /var/lib/etc-rancher:/etc/rancher
       - /var/lib/rancher:/var/lib/rancher
+    cgroupsPath: systemreserved/sshd
 onshutdown:
   - name: shutdown
     image: busybox:latest
     command: ["/bin/echo", "get back soon!"]
 
 files:
-  - path: root/.ssh/authorized_keys
-    source: ~/.ssh/id_rsa.pub
-    mode: "0600"
-    optional: true
   - path: etc/linuxkit.yml
     metadata: yaml
   - path: etc/motd
@@ -108,6 +113,59 @@ files:
 
 
     mode: "0744"
+  - path: /etc/os-release
+    contents: |
+      PRETTY_NAME="LinuxKit for k3s"
+  - path: root/.ssh/authorized_keys
+    source: ~/.ssh/id_rsa.pub
+    mode: "0600"
+    optional: true
+  - path: /etc/sysctl.d/01-k3s.conf
+    contents: |
+      net.ipv4.ip_forward=1
+      # iptables setting needed by br_netfilter module
+      # net.bridge.bridge-nf-call-iptables=1
+
+      ## Tuning ARP cache
+
+      net.ipv4.neigh.default.gc_thresh1=80000
+      net.ipv4.neigh.default.gc_thresh2=90000
+      net.ipv4.neigh.default.gc_thresh3=100000
+
+      ##
+      # Node optimizations
+      # (https://github.com/kubernetes/kops/blob/afb4ecb883142e3dad0a960149b25b1094fe4f69/nodeup/pkg/model/sysctls.go#L35)
+      ##
+
+      # Increase the number of connections
+      net.core.somaxconn=32768
+      # Maximum Socket Receive Buffer
+      net.core.rmem_max=16777216
+      # Maximum Socket Send Buffer
+      net.core.wmem_max=16777216
+      # Increase the maximum total buffer-space allocatable
+      net.ipv4.tcp_wmem="4096 12582912 16777216"
+      net.ipv4.tcp_rmem="4096 12582912 16777216"
+      # Increase the number of outstanding syn requests allowed
+      net.ipv4.tcp_max_syn_backlog=8096
+      # For persistent HTTP connections
+      net.ipv4.tcp_slow_start_after_idle=0
+      # Allow to reuse TIME_WAIT sockets for new connections when it is safe from protocol viewpoint
+      net.ipv4.tcp_tw_reuse=1
+      # Can't change the local_port_range without changing the NodePort range
+      # Allowed local port range
+      # net.ipv4.ip_local_port_range="1024 65000"
+      # Max number of packets that can be queued on interface input
+      # If kernel is receiving packets faster than can be processed
+      # this queue increases
+      net.core.netdev_max_backlog=16384
+      # Increase size of file handles and inode cache
+      fs.file-max=2097152
+      # Max number of inotify instances and watches for a user",
+      # Since dockerd runs as a single user, the default instances value of 128 per user is too low
+      # e.g. uses of inotify: nginx ingress controller, kubectl logs -f
+      fs.inotify.max_user_instances=8192
+      fs.inotify.max_user_watches=524288
 
 trust:
   org:
