@@ -1,7 +1,4 @@
 *-state
 *.iso
 kubeconfig.*
-<<<<<<< HEAD
-=======
 metadata.json
->>>>>>> build
