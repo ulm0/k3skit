@@ -17,6 +17,7 @@ jobs:
       - name: build
         run: |
           apk add --no-cache make
+          ls
           make
       - name: build artifacts
         uses: actions/upload-artifact@v1
