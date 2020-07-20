@@ -21,15 +21,20 @@ LKT_BIN=./linuxkit
 endif
 
 build:
-	@$(LKT_BIN) build -format iso-efi $(BUILD_YML)
+	# @$(LKT_BIN) build -format iso-efi -format kernel+initrd -format kernel+squashfs $(BUILD_YML)
+	@$(LKT_BIN) build -format kernel+squashfs $(BUILD_YML)
 
-yalk-sudo-run: json
+run-iso: json
 	@sudo linuxkit -v run hyperkit -networking=vmnet -cpus=$(YALK_CPUS) -mem=$(YALK_MEM) -disk size=$(YALK_DISK) -data-file=$(METADATA_JSON) -iso -uefi $(BUILD_ISO)
+
+run-initrd: json
+	@sudo linuxkit -v run hyperkit -networking=vmnet -cpus=$(YALK_CPUS) -mem=$(YALK_MEM) -disk size=$(YALK_DISK) -data-file=$(METADATA_JSON) -kernel k3s
+
+run: json
+	@sudo linuxkit -v run hyperkit -networking=vmnet -cpus=$(YALK_CPUS) -mem=$(YALK_MEM) -disk size=$(YALK_DISK) -data-file=$(METADATA_JSON) -squashfs k3s
 
 yalk-run: json
 	@linuxkit -v run hyperkit -networking=$(YALK_NET) -cpus=$(YALK_CPUS) -mem=$(YALK_MEM) -disk size=$(YALK_DISK) -data-file=$(METADATA_JSON) -iso -uefi $(BUILD_ISO)
-
-run: $(YALK_RUN)
 
 json:
 	@cat $(METADATA_YML)|gojsontoyaml -yamltojson > $(METADATA_JSON)

@@ -92,6 +92,7 @@ services:
   - name: sshd
     image: linuxkit/sshd:v0.8
     binds.add:
+      - /boot:/boot
       - /etc/motd:/etc/motd
       - /var/lib/etc-rancher:/etc/rancher
       - /var/lib/rancher:/var/lib/rancher
@@ -115,7 +116,7 @@ files:
     mode: "0744"
   - path: /etc/os-release
     contents: |
-      PRETTY_NAME="LinuxKit for k3s"
+      PRETTY_NAME="k3s on linuxkit"
   - path: root/.ssh/authorized_keys
     source: ~/.ssh/id_rsa.pub
     mode: "0600"
