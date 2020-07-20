@@ -1,0 +1,15 @@
+stages:
+  - build
+
+iso:
+  image: docker:19.03.12
+  services:
+    - docker:19.03.12-dind
+  stage: build
+  before_script:
+    - apk add --no-cache make
+  script:
+    - make
+  artifacts:
+    paths:
+      - k3s-efi.iso
