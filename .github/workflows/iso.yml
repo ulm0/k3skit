@@ -18,6 +18,7 @@ jobs:
         run: |
           apk add --no-cache make
           pwd
+          ls -lsah
           make
       - name: build artifacts
         uses: actions/upload-artifact@v1
