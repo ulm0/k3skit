@@ -1,4 +1,5 @@
 *-state
 *.iso
+k3s-*
 kubeconfig.*
 metadata.json
