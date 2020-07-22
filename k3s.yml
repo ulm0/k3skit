@@ -53,6 +53,7 @@ services:
     capabilities:
       - all
     net: host
+    pid: host
     command:
       - sh
       - /bin/rancher/k3s.sh
@@ -70,8 +71,6 @@ services:
         - kubepods
         - podruntime
         - systemreserved
-      mkdir:
-        - /var/lib/rancher
     binds:
       - /dev/kmsg:/dev/kmsg
       - /etc/resolv.conf:/etc/resolv.conf
@@ -97,10 +96,6 @@ services:
       - /var/lib/etc-rancher:/etc/rancher
       - /var/lib/rancher:/var/lib/rancher
     cgroupsPath: systemreserved/sshd
-onshutdown:
-  - name: shutdown
-    image: busybox:latest
-    command: ["/bin/echo", "get back soon!"]
 
 files:
   - path: etc/linuxkit.yml
@@ -111,9 +106,7 @@ files:
       | |_|_  |___    ___ ___   | |_|___ _ _ _ _| |_|_| |_ 
       | '_|_  |_ -|  | . |   |  | | |   | | |_'_| '_| |  _|
       |_,_|___|___|  |___|_|_|  |_|_|_|_|___|_,_|_,_|_|_|
-
-
-    mode: "0744"
+    mode: "0644"
   - path: /etc/os-release
     contents: |
       PRETTY_NAME="k3s on linuxkit"

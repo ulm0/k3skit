@@ -33,19 +33,11 @@ run-initrd: json
 run: json
 	@sudo linuxkit -v run hyperkit -networking=vmnet -cpus=$(YALK_CPUS) -mem=$(YALK_MEM) -disk size=$(YALK_DISK) -data-file=$(METADATA_JSON) -squashfs k3s
 
-yalk-run: json
-	@linuxkit -v run hyperkit -networking=$(YALK_NET) -cpus=$(YALK_CPUS) -mem=$(YALK_MEM) -disk size=$(YALK_DISK) -data-file=$(METADATA_JSON) -iso -uefi $(BUILD_ISO)
-
 json:
 	@cat $(METADATA_YML)|gojsontoyaml -yamltojson > $(METADATA_JSON)
 
 cilium:
 	@./utils/cilium
 
-clean: $(YALK_CLEAN)
-
-yalk-sudo-clean:
+clean:
 	@sudo rm -rf $(BUILD_ISO) $(METADATA_JSON) $(YALK_STATE)
-
-yalk-clean:
-	@rm -rf $(BUILD_ISO) $(METADATA_JSON) $(YALK_STATE)

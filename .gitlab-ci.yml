@@ -13,3 +13,6 @@ build:iso:
   artifacts:
     paths:
       - k3s-*
+  only:
+    - master
+    - merge_requests
