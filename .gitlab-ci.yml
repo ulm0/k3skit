@@ -16,7 +16,6 @@ build:iso:
       - k3s-*
   only:
     - master
-    - merge_requests
     - tags
 
 github:release:
