@@ -72,7 +72,8 @@ services:
         - podruntime
         - systemreserved
     binds:
-      - /dev/kmsg:/dev/kmsg
+      - /dev:/dev
+      - /etc/os-release:/etc/os-release
       - /etc/resolv.conf:/etc/resolv.conf
       - /lib/modules:/lib/modules
       - /run/config/rancher:/bin/rancher

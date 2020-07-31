@@ -1,7 +1,7 @@
 WHICH_BIN=$(shell which linuxkit)
 LKT_BIN=/usr/local/bin/linuxkit
-YALK_STATE=k3s-efi-state
-BUILD_ISO?=k3s-efi.iso
+YALK_STATE=k3s-state
+BUILD_ISO?=k3s-*
 BUILD_YML?=k3s.yml
 METADATA_JSON?=metadata.json
 METADATA_YML?=metadata.yml
