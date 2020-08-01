@@ -17,6 +17,7 @@ build:iso:
   only:
     - master
     - tags
+    - external_pull_requests
 
 github:release:
   image: ulm0/deliver:1.0
