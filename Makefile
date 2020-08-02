@@ -20,8 +20,12 @@ ifneq ($(WHICH_BIN),$(LKT_BIN))
 LKT_BIN=./linuxkit
 endif
 
+default: build
+
+build-all:
+	@$(LKT_BIN) build -format iso-efi -format kernel+initrd -format kernel+squashfs $(BUILD_YML)
+
 build:
-	# @$(LKT_BIN) build -format iso-efi -format kernel+initrd -format kernel+squashfs $(BUILD_YML)
 	@$(LKT_BIN) build -format kernel+squashfs $(BUILD_YML)
 
 run-iso: json
@@ -41,3 +45,9 @@ cilium:
 
 clean:
 	@sudo rm -rf $(BUILD_ISO) $(METADATA_JSON) $(YALK_STATE)
+
+linuxkit-build-docker:
+	@docker build -t ulm0/linuxkit:v0.8 -f linuxkit/Dockerfile linuxkit/
+
+linuxkit-build-push:
+	@docker push ulm0/linuxkit:v0.8

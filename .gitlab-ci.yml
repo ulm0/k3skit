@@ -3,14 +3,14 @@ stages:
   - publish
 
 build:iso:
-  image: docker:19.03.12
+  image: ulm0/linuxkit:v0.8
   services:
     - docker:19.03.12-dind
   stage: build
   before_script:
     - apk add --no-cache make
   script:
-    - make
+    - make build-all
   artifacts:
     paths:
       - k3s-*
