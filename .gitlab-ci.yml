@@ -20,7 +20,7 @@ build:iso:
     - external_pull_requests
 
 github:release:
-  image: ulm0/deliver:1.0
+  image: ulm0/deliver:v1.1.0
   stage: publish
   variables:
     OVERRIDE_RELEASE: "true"
