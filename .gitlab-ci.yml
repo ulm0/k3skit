@@ -24,7 +24,7 @@ github:release:
   stage: publish
   variables:
     OVERRIDE_RELEASE: "true"
-    RELEASE_CHECKSUMS: sha512
+    RELEASE_CHECKSUM: sha512
     RELEASE_DESCRIPTION: "k3s on linuxkit"
     RELEASE_FILES: $CI_PROJECT_DIR/k3s-*
     RELEASE_NAME: $CI_COMMIT_TAG
