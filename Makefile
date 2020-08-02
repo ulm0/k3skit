@@ -1,5 +1,3 @@
-WHICH_BIN=$(shell which linuxkit)
-LKT_BIN=/usr/local/bin/linuxkit
 YALK_STATE=k3s-state
 BUILD_ISO?=k3s-*
 BUILD_YML?=k3s.yml
@@ -8,25 +6,14 @@ METADATA_YML?=metadata.yml
 YALK_CPUS?=2
 YALK_DISK?=10G
 YALK_MEM?=2048
-YALK_NET?=vmnet
-ifeq ($(YALK_NET), vmnet)
-YALK_RUN=yalk-sudo-run
-YALK_CLEAN=yalk-sudo-clean
-else
-YALK_RUN=yalk-run
-YALK_CLEAN=yalk-clean
-endif
-ifneq ($(WHICH_BIN),$(LKT_BIN))
-LKT_BIN=./linuxkit
-endif
 
 default: build
 
 build-all:
-	@$(LKT_BIN) build -format iso-efi -format kernel+initrd -format kernel+squashfs $(BUILD_YML)
+	@linuxkit build -format iso-efi -format kernel+initrd -format kernel+squashfs $(BUILD_YML)
 
 build:
-	@$(LKT_BIN) build -format kernel+squashfs $(BUILD_YML)
+	@linuxkit build -format kernel+squashfs $(BUILD_YML)
 
 run-iso: json
 	@sudo linuxkit -v run hyperkit -networking=vmnet -cpus=$(YALK_CPUS) -mem=$(YALK_MEM) -disk size=$(YALK_DISK) -data-file=$(METADATA_JSON) -iso -uefi $(BUILD_ISO)
