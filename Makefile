@@ -36,5 +36,5 @@ clean:
 linuxkit-build-docker:
 	@docker build -t ulm0/linuxkit:v0.8 -f linuxkit/Dockerfile linuxkit/
 
-linuxkit-build-push:
+linuxkit-push-docker:
 	@docker push ulm0/linuxkit:v0.8
