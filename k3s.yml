@@ -15,8 +15,6 @@ onboot:
      - /etc/sysctl.d/01-k3s.conf:/etc/sysctl.d/01-k3s.conf
   - name: sysfs
     image: linuxkit/sysfs:v0.8
-  # - name: binfmt
-  #   image: linuxkit/binfmt:v0.8
   - name: format
     image: linuxkit/format:v0.8
   - name: mount
@@ -36,9 +34,9 @@ onboot:
     image: linuxkit/dhcpcd:v0.8
     command: ["/sbin/dhcpcd", "--nobackground", "-f", "/dhcpcd.conf", "-1"]
 services:
-  # - name: rngd
-  #   image: linuxkit/rngd:v0.8
-  #   cgroupsPath: systemreserved/rngd
+  - name: rngd
+    image: linuxkit/rngd:v0.8
+    cgroupsPath: systemreserved/rngd
   - name: acpid
     image: linuxkit/acpid:v0.8
     cgroupsPath: systemreserved/acpid
@@ -49,14 +47,14 @@ services:
     image: linuxkit/host-timesync-daemon:v0.8
     cgroupsPath: systemreserved/host-timesync-daemon
   - name: k3s
-    image: rancher/k3s:v1.18.6-k3s1
+    image: rancher/k3s:v1.18.8-k3s1
     capabilities:
       - all
     net: host
     pid: host
     command:
       - sh
-      - /bin/rancher/k3s.sh
+      - /bin/rancher/k3s-helper
     mounts:
       - type: bind
         source: /sys/fs/cgroup
@@ -86,6 +84,8 @@ services:
   #   env:
   #     - INSECURE=true
   #   binds.add:
+  #     - /boot:/boot
+  #     - /etc/motd:/etc/motd
   #     - /var/lib/etc-rancher:/etc/rancher
   #     - /var/lib/rancher:/var/lib/rancher
   #   cgroupsPath: systemreserved/getty
@@ -103,14 +103,18 @@ files:
     metadata: yaml
   - path: etc/motd
     contents: |
-      __   ___                   _ _             _   _ _   
-      | |_|_  |___    ___ ___   | |_|___ _ _ _ _| |_|_| |_ 
-      | '_|_  |_ -|  | . |   |  | | |   | | |_'_| '_| |  _|
-      |_,_|___|___|  |___|_|_|  |_|_|_|_|___|_,_|_,_|_|_|
+      __   ___     _   _ _   
+      | |_|_  |___| |_|_| |_ 
+      | '_|_  |_ -| '_| |  _|
+      |_,_|___|___|_,_|_|_|
     mode: "0644"
   - path: /etc/os-release
     contents: |
-      PRETTY_NAME="k3s on linuxkit"
+      NAME="k3skit"
+      ID="k3skit"
+      PRETTY_NAME="k3skit"
+      HOME_URL="https://github.com/ulm0/k3skit"
+      BUG_REPORT_URL="https://github.com/ulm0/k3skit/issues"
   - path: root/.ssh/authorized_keys
     source: ~/.ssh/id_rsa.pub
     mode: "0600"

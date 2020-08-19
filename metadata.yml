@@ -1,12 +1,11 @@
 rancher:
   entries:
-    k3s.sh:
+    k3s-helper:
       content: |
         export MASTER_IP=$(/bin/ifconfig eth0|grep 'inet addr'| cut -d: -f2 | awk '{ print $1 }')
         /bin/k3s \
           server \
             --bind-address=${MASTER_IP} \
-            --disable-cloud-controller \
             --disable=metrics-server \
             --disable=servicelb \
             --disable=traefik \
@@ -14,7 +13,6 @@ rancher:
             --kubelet-arg=cgroup-root=kubepods \
             --kubelet-arg=kube-reserved-cgroup=podruntime \
             --kubelet-arg=system-reserved-cgroup=systemreserved \
-            --no-flannel \
             --node-external-ip=${MASTER_IP} \
             --node-ip=${MASTER_IP} \
             --secrets-encryption
