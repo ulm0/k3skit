@@ -16,4 +16,4 @@ rancher:
             --node-external-ip=${MASTER_IP} \
             --node-ip=${MASTER_IP} \
             --secrets-encryption
-      mode: "0755"
+      perm: "0755"
