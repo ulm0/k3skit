@@ -1,3 +1,3 @@
 # k3skit
 
-Simple build for k3s in linuxkit running on hyperkit
+Simple PoC build for k3s in linuxkit

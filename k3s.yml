@@ -47,7 +47,7 @@ services:
     image: linuxkit/host-timesync-daemon:v0.8
     cgroupsPath: systemreserved/host-timesync-daemon
   - name: k3s
-    image: rancher/k3s:v1.18.8-k3s1
+    image: rancher/k3s:v1.19.2-k3s1
     capabilities:
       - all
     net: host
@@ -79,16 +79,16 @@ services:
       - /var/lib/rancher:/var/lib/rancher
     rootfsPropagation: shared
     cgroupsPath: podruntime/k3s
-  # - name: getty
-  #   image: linuxkit/getty:v0.8
-  #   env:
-  #     - INSECURE=true
-  #   binds.add:
-  #     - /boot:/boot
-  #     - /etc/motd:/etc/motd
-  #     - /var/lib/etc-rancher:/etc/rancher
-  #     - /var/lib/rancher:/var/lib/rancher
-  #   cgroupsPath: systemreserved/getty
+  - name: getty
+    image: linuxkit/getty:v0.8
+    env:
+      - INSECURE=true
+    binds.add:
+      - /boot:/boot
+      - /etc/motd:/etc/motd
+      - /var/lib/etc-rancher:/etc/rancher
+      - /var/lib/rancher:/var/lib/rancher
+    cgroupsPath: systemreserved/getty
   - name: sshd
     image: linuxkit/sshd:v0.8
     binds.add:
@@ -107,6 +107,10 @@ files:
       | |_|_  |___| |_|_| |_ 
       | '_|_  |_ -| '_| |  _|
       |_,_|___|___|_,_|_|_|
+
+      Built by: ulm0 <ulm0@innersea.xyz>
+      Project on GitHub: https://github.com/ulm0/k3skit
+
     mode: "0644"
   - path: /etc/os-release
     contents: |
