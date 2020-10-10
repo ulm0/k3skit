@@ -1,0 +1,16 @@
+rancher:
+  entries:
+    k3s-helper:
+      content: |
+        export MASTER_IP=$(/bin/ifconfig eth0|grep 'inet addr'| cut -d: -f2 | awk '{ print $1 }')
+        /bin/k3s \
+          agent \
+            -t=K1009dfbeafaf89b6dd9ae0874a7eeb4aa21480d48159658ce8999a28c19df173c8::server:bdac1227c49f1abd9dba8c1624bc7919 \
+            -s=https://192.168.1.105:6443 \
+            --kubelet-arg=cgroup-root=kubepods \
+            --kubelet-arg=kube-reserved-cgroup=podruntime \
+            --kubelet-arg=node-status-update-frequency=4s \
+            --kubelet-arg=system-reserved-cgroup=systemreserved \
+            --node-external-ip=${MASTER_IP} \
+            --node-ip=${MASTER_IP}
+      perm: "0755"
