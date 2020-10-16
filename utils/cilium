@@ -19,7 +19,7 @@ helm upgrade cilium --install cilium/cilium \
     --set global.hubble.relay.enabled=true \
     --set global.hubble.ui.enabled=true \
     --set global.k8s.requireIPv4PodCIDR=true \
-    --set global.k8sServiceHost=192.168.1.105 \
+    --set global.k8sServiceHost=192.168.1.109 \
     --set global.k8sServicePort=${API_SERVER_PORT:-6443} \
     --set global.kubeProxyReplacement=strict \
     --set global.nodePort.enabled=true \

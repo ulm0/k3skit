@@ -6,6 +6,7 @@ rancher:
         /bin/k3s \
           server \
             --bind-address=${MASTER_IP} \
+            --disable-kube-proxy \
             --disable=traefik \
             --flannel-backend=none \
             --kube-controller-manager-arg=allocate-node-cidrs=true \
