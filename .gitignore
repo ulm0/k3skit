@@ -4,3 +4,4 @@ k3s-*
 kubeconfig*
 linuxkit/linuxkit
 metadata*.json
+mkimage-*
