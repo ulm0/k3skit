@@ -10,7 +10,7 @@ build:iso:
   before_script:
     - apk add --no-cache make
   script:
-    - make build-all
+    - make
   artifacts:
     paths:
       - k3s-*
