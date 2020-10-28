@@ -1,5 +1,6 @@
 *-state
 *.iso
+default.pem
 k3s-*
 kubeconfig*
 linuxkit/linuxkit
