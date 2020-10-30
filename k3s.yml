@@ -15,10 +15,9 @@ onboot:
     image: linuxkit/sysfs:v0.8
   - name: format
     image: linuxkit/format:v0.8
-    command: ["/usr/bin/format", "-force", "-verbose", "-type", "ext4", "-label", "ephemeral0", "/dev/vda"]
   - name: mount
     image: linuxkit/mount:v0.8
-    command: ["/usr/bin/mountie", "-label", "ephemeral0", "/var/lib"]
+    command: ["/usr/bin/mountie", "/var/lib/rancher"]
   - name: move-logs
     image: busybox:latest
     binds:
@@ -27,8 +26,8 @@ onboot:
   - name: mkdir
     image: busybox:latest
     binds:
-      - /var/lib:/host_var_lib
-    command: ["/bin/sh", "-c", "mkdir -p /host_var_lib/rancher /host_var_lib/etc-rancher"]
+      - /var/lib/rancher:/host_var_lib_rancher
+    command: ["/bin/sh", "-c", "mkdir -p /host_var_lib_rancher/k3s /host_var_lib_rancher/etc"]
   - name: dhcpcd
     image: linuxkit/dhcpcd:v0.8
     command: ["/sbin/dhcpcd", "--nobackground", "-f", "/dhcpcd.conf", "-1"]
@@ -74,8 +73,8 @@ services:
       - /etc/resolv.conf:/etc/resolv.conf
       - /lib/modules:/lib/modules
       - /run/config/rancher:/bin/rancher
-      - /var/lib/etc-rancher:/etc/rancher
-      - /var/lib/rancher:/var/lib/rancher
+      - /var/lib/rancher/etc:/etc/rancher
+      - /var/lib/rancher/k3s:/var/lib/rancher
     rootfsPropagation: shared
     cgroupsPath: podruntime/k3s
   - name: getty
@@ -85,17 +84,17 @@ services:
     binds.add:
       - /boot:/boot
       - /etc/motd:/etc/motd
-      - /var/lib/etc-rancher:/etc/rancher
-      - /var/lib/rancher:/var/lib/rancher
+      - /var/lib/rancher/etc:/etc/rancher
+      - /var/lib/rancher/k3s:/var/lib/rancher
     cgroupsPath: systemreserved/getty
   - name: sshd
     image: linuxkit/sshd:v0.8
     binds.add:
       - /boot:/boot
       - /etc/motd:/etc/motd
-      - /var/lib/etc-rancher:/etc/rancher
-      - /var/lib/rancher:/var/lib/rancher
       - /run/config/ssh:/root/.ssh
+      - /var/lib/rancher/etc:/etc/rancher
+      - /var/lib/rancher/k3s:/var/lib/rancher
     cgroupsPath: systemreserved/sshd
 files:
   - path: etc/linuxkit.yml
@@ -111,7 +110,7 @@ files:
       Project on GitHub: https://github.com/ulm0/k3skit
 
     mode: "0644"
-  - path: /etc/os-release
+  - path: etc/os-release
     contents: |
       NAME="k3skit"
       ID="k3skit"
