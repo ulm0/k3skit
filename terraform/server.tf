@@ -22,7 +22,9 @@ resource libvirt_volume server_kernel {
 data template_file server_metadata {
   template = file(format("%s/files/server.yml", path.module))
   vars = {
+    agents         = var.agents
     authorized_key = tls_private_key.default.public_key_openssh
+    hostname       = "k3skit-server"
   }
 }
 

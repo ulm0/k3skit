@@ -1,6 +1,6 @@
 resource libvirt_volume agent_os {
   count  = var.agents
-  name   = format("k3skit-agent-%s-os.img", count.index + 1)
+  name   = format("k3skit-agent-%s-os.img", count.index)
   pool   = libvirt_pool.k3skit.name
   source = var.k3skit_os
   format = "raw"
@@ -8,7 +8,7 @@ resource libvirt_volume agent_os {
 
 resource libvirt_volume agent_volume {
   count  = var.agents
-  name   = format("k3skit-agent-%s-volume.img", count.index + 1)
+  name   = format("k3skit-agent-%s-volume.img", count.index)
   pool   = libvirt_pool.k3skit.name
   size   = 20 * 1024 * 1024 * 1024 # Size in bytes (N  (GiB) * 1024 (MiB) * 1024 (KiB) * 1024 (Bytes))
   format = "raw"
@@ -16,31 +16,34 @@ resource libvirt_volume agent_volume {
 
 resource libvirt_volume agent_kernel {
   count  = var.agents
-  name   = format("k3skit-agent-%s-kernel.img", count.index + 1)
+  name   = format("k3skit-agent-%s-kernel.img", count.index)
   source = var.k3skit_kernel
   pool   = libvirt_pool.k3skit.name
   format = "raw"
 }
 
 data template_file agent_metadata {
+  count    = var.agents
   template = file(format("%s/files/agent.yml", path.module))
   vars = {
     authorized_key = tls_private_key.default.public_key_openssh
     server         = local.kubeconfig.clusters.0.cluster.server
+    hostname       = format("k3skit-agent-%s", count.index)
     token          = data.external.token.result.token
   }
 }
 
 resource libvirt_cloudinit_disk agent_metadata {
-  name      = "k3skit-agent-metadata.iso"
-  user_data = jsonencode(yamldecode(data.template_file.agent_metadata.rendered))
+  count     = var.agents
+  name      = format("k3skit-agent-%s-metadata.iso", count.index)
+  user_data = jsonencode(yamldecode(element(data.template_file.agent_metadata.*.rendered, count.index)))
   pool      = libvirt_pool.k3skit.name
 }
 
 resource libvirt_domain agent {
   depends_on = [libvirt_domain.server]
   count      = var.agents
-  name       = format("k3skit-agent-%s", count.index + 1)
+  name       = format("k3skit-agent-%s", count.index)
   memory     = "2048"
   vcpu       = 1
   qemu_agent = false
@@ -53,11 +56,11 @@ resource libvirt_domain agent {
     }
   ]
 
-  cloudinit = libvirt_cloudinit_disk.agent_metadata.id
+  cloudinit = element(libvirt_cloudinit_disk.agent_metadata.*.id, count.index)
 
   network_interface {
     network_name   = "default"
-    hostname       = format("k3skit-agent-%s", count.index + 1)
+    hostname       = format("k3skit-agent-%s", count.index)
     wait_for_lease = true
   }
 

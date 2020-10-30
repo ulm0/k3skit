@@ -19,3 +19,8 @@ ssh:
     authorized_keys:
       content: |
         ${authorized_key}
+hostname:
+  entries:
+    hostname:
+      content: |
+        ${hostname}

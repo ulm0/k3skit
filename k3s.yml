@@ -9,6 +9,16 @@ init:
 onboot:
   - name: metadata
     image: linuxkit/metadata:v0.8
+  - name: hostname
+    image: busybox:latest
+    command: ["hostname", "-F", "/etc/hostname"]
+    binds:
+      - /run/config/hostname/hostname:/etc/hostname
+    net: host
+    pid: host
+    rootfsPropagation: shared
+    capabilities:
+      - CAP_SYS_ADMIN
   - name: sysctl
     image: linuxkit/sysctl:v0.8
   - name: sysfs
