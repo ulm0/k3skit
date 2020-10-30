@@ -10,5 +10,5 @@ Check [terraform folder](./terraform) for an example using [terraform-provider-l
 - [ ] Multi-server deployment
 - [ ] Build for cloud platforms
     - [ ] Pre-built terraform modules(?)
-- [ ] Support for cloud providers
+- [ ] Support for kubernetes cloud providers
 - [ ] Further tests
