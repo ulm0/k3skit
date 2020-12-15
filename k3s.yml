@@ -55,7 +55,7 @@ services:
     image: linuxkit/host-timesync-daemon:v0.8
     cgroupsPath: systemreserved/host-timesync-daemon
   - name: k3s
-    image: rancher/k3s:v1.19.4-k3s1
+    image: rancher/k3s:v1.19.5-k3s1
     capabilities:
       - all
     net: host

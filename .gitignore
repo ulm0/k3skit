@@ -3,6 +3,6 @@
 default.pem
 k3s-*
 kubeconfig*
-linuxkit/linuxkit
+linuxkit/mkimage*
 metadata*.json
 mkimage-*
